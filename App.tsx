@@ -1,17 +1,32 @@
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+
 import { Provider } from 'react-redux';
 
-import { BottomTabs } from './src/navigation/BottomTabs';
-import { store } from './src/store/store';
+import { NavigationContainer } from '@react-navigation/native';
 
-function App() {
+import BootSplash from 'react-native-bootsplash';
+
+import { store } from './src/store/store';
+import { RootNavigator } from './src/navigation/RootNavigator';
+
+const App = () => {
+  useEffect(() => {
+    const init = async () => {
+      await BootSplash.hide({
+        fade: true,
+      });
+    };
+
+    init();
+  }, []);
+
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <BottomTabs />
+        <RootNavigator />
       </NavigationContainer>
     </Provider>
   );
-}
+};
 
 export default App;

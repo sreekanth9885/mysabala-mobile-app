@@ -1,14 +1,16 @@
 import React from 'react';
 import { FlatList, Image, Text, View, TouchableOpacity } from 'react-native';
-
 import { useDispatch, useSelector } from 'react-redux';
-
 import type { RootState } from '../store/store';
 import { addToCart, removeFromCart, deleteFromCart } from '../store/cartSlice';
-
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 const IMAGE_BASE_URL = 'https://api.mysabala.com';
 
 const CartScreen = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useDispatch();
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -183,6 +185,7 @@ const CartScreen = () => {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
+            marginBottom: 14,
           }}
         >
           <Text
@@ -200,9 +203,30 @@ const CartScreen = () => {
               fontWeight: '700',
             }}
           >
-            ₹{totalAmount}
+            ₹{totalAmount.toFixed(2)}
           </Text>
         </View>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Checkout')}
+          style={{
+            height: 52,
+            borderRadius: 14,
+            backgroundColor: '#16A34A',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              color: '#FFFFFF',
+              fontSize: 16,
+              fontWeight: '700',
+            }}
+          >
+            Proceed to Checkout
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
