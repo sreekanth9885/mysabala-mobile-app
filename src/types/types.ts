@@ -6,6 +6,7 @@ export interface Product {
   sub_category_name: string;
   name: string;
   unit: string;
+  price: number;
   image: string | null;
   created_at: string;
   updated_at: string;
