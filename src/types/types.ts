@@ -27,3 +27,43 @@ export interface ProductsResponse {
 export interface CategoriesResponse {
   data: Category[];
 }
+
+export interface OrderItem {
+  id: number;
+  order_id: number;
+  food_item_id: number;
+  food_name: string;
+  quantity: number;
+  price: string;
+  total: string;
+  created_at: string;
+}
+
+export interface Order {
+  id: number;
+  user_id: number;
+
+  customer_name: string;
+  customer_phone: string;
+
+  address: string;
+  city: string;
+  pincode: string;
+
+  subtotal: string;
+  delivery_fee: string;
+  gst: string;
+  grand_total: string;
+
+  payment_method: string;
+  payment_status: string;
+  order_status: string;
+
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+
+  created_at: string;
+
+  items: OrderItem[];
+}

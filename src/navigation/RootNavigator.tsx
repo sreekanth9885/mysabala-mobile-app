@@ -9,9 +9,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import WelcomeScreen from '../screens/WelcomeScreen';
 
 import { BottomTabs } from './BottomTabs';
-import CheckoutScreen from '../screens/CheckoutScreen';
+import CheckoutPage from '../screens/checkout/CheckoutPage';
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import OrdersScreen from '../screens/orders/OrdersScreen';
 export type RootStackParamList = {
   Welcome: undefined;
+  Login: {
+    redirect?: 'Checkout' | 'Cart' | 'Register';
+  };
+  Register: undefined;
   Main: undefined;
   Checkout: undefined;
   Orders: undefined;
@@ -65,9 +72,11 @@ export function RootNavigator() {
       initialRouteName={hasCompletedOnboarding ? 'Main' : 'Welcome'}
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
-
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Orders" component={OrdersScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Main" component={BottomTabs} />
-      <Stack.Screen name="Checkout" component={CheckoutScreen} />
+      <Stack.Screen name="Checkout" component={CheckoutPage} />
     </Stack.Navigator>
   );
 }

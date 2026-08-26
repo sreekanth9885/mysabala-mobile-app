@@ -1,18 +1,17 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface User {
+export type User = {
   id: number;
   name: string;
   email: string;
   phone?: string;
-}
+};
 
-interface AuthState {
+type AuthState = {
   token: string | null;
   user: User | null;
   isLoggedIn: boolean;
-}
+};
 
 const initialState: AuthState = {
   token: null,
@@ -36,11 +35,6 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.user = action.payload.user;
       state.isLoggedIn = true;
-
-      // Save asynchronously for persistence
-      AsyncStorage.setItem('token', action.payload.token);
-
-      AsyncStorage.setItem('user', JSON.stringify(action.payload.user));
     },
 
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
@@ -49,8 +43,6 @@ const authSlice = createSlice({
           ...state.user,
           ...action.payload,
         };
-
-        AsyncStorage.setItem('user', JSON.stringify(state.user));
       }
     },
 
@@ -58,26 +50,10 @@ const authSlice = createSlice({
       state.token = null;
       state.user = null;
       state.isLoggedIn = false;
-
-      AsyncStorage.removeItem('token');
-      AsyncStorage.removeItem('user');
-    },
-
-    restoreCredentials: (
-      state,
-      action: PayloadAction<{
-        token: string;
-        user: User;
-      }>,
-    ) => {
-      state.token = action.payload.token;
-      state.user = action.payload.user;
-      state.isLoggedIn = true;
     },
   },
 });
 
-export const { setCredentials, updateUser, logoutUser, restoreCredentials } =
-  authSlice.actions;
+export const { setCredentials, updateUser, logoutUser } = authSlice.actions;
 
 export default authSlice.reducer;

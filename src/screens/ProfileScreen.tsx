@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {
+  Alert,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -17,22 +18,43 @@ import {
   Package,
   User,
 } from 'lucide-react-native';
-
+import { useDispatch, useSelector } from 'react-redux';
+import type { RootState } from '../store/store';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/RootNavigator';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { logoutUser } from '../store/authSlice';
 const ORANGE = '#F7890B';
-
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export function ProfileScreen() {
-  const isLoggedIn = false;
+  const navigation = useNavigation<NavigationProp>();
+  const { isLoggedIn, user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
 
+  const handleLogout = () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          dispatch(logoutUser());
+        },
+      },
+    ]);
+  };
   const handleLogin = () => {
-    // TODO: Navigate to Login screen
-    console.log('Login pressed');
+    navigation.navigate('Login', {
+      redirect: 'Cart',
+    });
   };
 
   const handleSignUp = () => {
-    // TODO: Navigate to Register screen
-    console.log('Sign Up pressed');
+    navigation.navigate('Register');
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -91,6 +113,7 @@ export function ProfileScreen() {
                 icon={<Package size={21} color="#374151" />}
                 title="My Orders"
                 subtitle="Track your orders"
+                onPress={() => navigation.navigate('Orders')}
               />
 
               <ProfileMenuItem
@@ -129,13 +152,19 @@ export function ProfileScreen() {
           <View>
             <View style={styles.profileCard}>
               <View style={styles.loggedAvatar}>
-                <Text style={styles.avatarText}>S</Text>
+                <Text style={styles.avatarText}>
+                  {(user?.name || 'U').charAt(0).toUpperCase()}
+                </Text>
               </View>
 
               <View style={styles.profileInfo}>
-                <Text style={styles.userName}>Srikanth</Text>
+                <Text style={styles.userName}>
+                  {user?.name || 'MySabala User'}
+                </Text>
 
-                <Text style={styles.phoneNumber}>+91 XXXXX XXXXX</Text>
+                <Text style={styles.phoneNumber}>
+                  {user?.phone || user?.email || ''}
+                </Text>
               </View>
 
               <ChevronRight size={22} color="#9CA3AF" />
@@ -162,6 +191,15 @@ export function ProfileScreen() {
                 subtitle="Your saved products"
               />
             </View>
+            <Pressable
+              onPress={handleLogout}
+              style={({ pressed }) => [
+                styles.logoutButton,
+                pressed && styles.buttonPressed,
+              ]}
+            >
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </Pressable>
           </View>
         )}
       </ScrollView>
@@ -177,11 +215,18 @@ interface ProfileMenuItemProps {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
+  onPress?: () => void;
 }
 
-function ProfileMenuItem({ icon, title, subtitle }: ProfileMenuItemProps) {
+function ProfileMenuItem({
+  icon,
+  title,
+  subtitle,
+  onPress,
+}: ProfileMenuItemProps) {
   return (
     <Pressable
+      onPress={onPress}
       style={({ pressed }) => [styles.menuItem, pressed && styles.menuPressed]}
     >
       <View style={styles.menuIcon}>{icon}</View>
@@ -462,5 +507,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
 
     color: '#9CA3AF',
+  },
+  logoutButton: {
+    marginTop: 20,
+    paddingVertical: 14,
+    borderRadius: 14,
+    backgroundColor: ORANGE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+
+  logoutButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

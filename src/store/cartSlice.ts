@@ -19,6 +19,10 @@ const cartSlice = createSlice({
   initialState,
 
   reducers: {
+    // ==========================================
+    // ADD TO CART
+    // ==========================================
+
     addToCart: (state, action: PayloadAction<Product>) => {
       const existingItem = state.items.find(
         item => item.id === action.payload.id,
@@ -34,21 +38,89 @@ const cartSlice = createSlice({
       }
     },
 
-    removeFromCart: (state, action: PayloadAction<number>) => {
-      const existingItem = state.items.find(item => item.id === action.payload);
+    // ==========================================
+    // INCREASE QUANTITY
+    // ==========================================
 
-      if (!existingItem) return;
+    increaseQuantity: (state, action: PayloadAction<number>) => {
+      const item = state.items.find(item => item.id === action.payload);
 
-      if (existingItem.quantity > 1) {
-        existingItem.quantity -= 1;
+      if (!item) return;
+
+      item.quantity += 1;
+    },
+
+    // ==========================================
+    // DECREASE QUANTITY
+    // ==========================================
+
+    decreaseQuantity: (state, action: PayloadAction<number>) => {
+      const item = state.items.find(item => item.id === action.payload);
+
+      if (!item) return;
+
+      if (item.quantity > 1) {
+        item.quantity -= 1;
       } else {
         state.items = state.items.filter(item => item.id !== action.payload);
       }
     },
 
+    // ==========================================
+    // REMOVE FROM CART
+    // ==========================================
+    // This behaves like decrease quantity.
+    // Kept for compatibility with your existing code.
+
+    removeFromCart: (state, action: PayloadAction<number>) => {
+      const item = state.items.find(item => item.id === action.payload);
+
+      if (!item) return;
+
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+      } else {
+        state.items = state.items.filter(item => item.id !== action.payload);
+      }
+    },
+
+    // ==========================================
+    // DELETE ITEM COMPLETELY
+    // ==========================================
+
     deleteFromCart: (state, action: PayloadAction<number>) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
+
+    // ==========================================
+    // SET EXACT QUANTITY
+    // ==========================================
+
+    setQuantity: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        quantity: number;
+      }>,
+    ) => {
+      const { id, quantity } = action.payload;
+
+      const item = state.items.find(item => item.id === id);
+
+      if (!item) return;
+
+      if (quantity <= 0) {
+        state.items = state.items.filter(item => item.id !== id);
+
+        return;
+      }
+
+      item.quantity = quantity;
+    },
+
+    // ==========================================
+    // CLEAR CART
+    // ==========================================
 
     clearCart: state => {
       state.items = [];
@@ -56,7 +128,14 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart, deleteFromCart, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  increaseQuantity,
+  decreaseQuantity,
+  removeFromCart,
+  deleteFromCart,
+  setQuantity,
+  clearCart,
+} = cartSlice.actions;
 
 export default cartSlice.reducer;
