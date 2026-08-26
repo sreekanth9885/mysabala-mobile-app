@@ -158,11 +158,8 @@ export const useCheckout = (
   return {
     address,
     setAddress,
-
     totals,
-
     isLoading,
-
     handlePayment,
   };
 };

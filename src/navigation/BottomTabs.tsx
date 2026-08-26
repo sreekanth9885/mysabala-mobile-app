@@ -5,7 +5,7 @@ import { Home, Grid2X2, ShoppingCart, User } from 'lucide-react-native';
 import HomeScreen from '../screens/HomeScreen';
 import Categories from '../screens/Categories';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import CartScreen from '../screens/CartScreen';
+import CartScreen from '../screens/cart/CartScreen';
 
 export type BottomTabParamList = {
   Home: undefined;
