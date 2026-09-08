@@ -1,22 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
 interface Props {
   total: number;
   loading: boolean;
   onPay: () => void;
 }
-
 export default function CheckoutBottomBar({ total, loading, onPay }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View>
           <Text style={styles.label}>Total Amount</Text>
-
           <Text style={styles.total}>₹{total.toFixed(2)}</Text>
         </View>
-
         <TouchableOpacity
           style={[styles.button, loading && styles.disabled]}
           onPress={onPay}
@@ -30,7 +26,6 @@ export default function CheckoutBottomBar({ total, loading, onPay }: Props) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
@@ -44,24 +39,20 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     elevation: 8,
   },
-
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   label: {
     fontSize: 12,
     color: '#6b7280',
   },
-
   total: {
     fontSize: 18,
     fontWeight: '700',
     color: '#111827',
   },
-
   button: {
     backgroundColor: '#16a34a',
     borderRadius: 12,
@@ -70,11 +61,9 @@ const styles = StyleSheet.create({
     minWidth: 120,
     alignItems: 'center',
   },
-
   disabled: {
     opacity: 0.6,
   },
-
   buttonText: {
     color: '#ffffff',
     fontWeight: '600',

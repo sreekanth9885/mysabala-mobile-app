@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { CheckoutAddress } from '../types/checkoutType';
-
 interface Props {
   value: CheckoutAddress;
   onChange: (value: CheckoutAddress) => void;
 }
-
 export default function DeliveryAddressForm({ value, onChange }: Props) {
   const updateField = (field: keyof CheckoutAddress, fieldValue: string) => {
     onChange({
@@ -14,14 +12,11 @@ export default function DeliveryAddressForm({ value, onChange }: Props) {
       [field]: fieldValue,
     });
   };
-
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>Delivery Address</Text>
-
       <View style={styles.formGroup}>
         <Text style={styles.label}>Full Name</Text>
-
         <TextInput
           style={styles.input}
           placeholder="Enter your full name"
@@ -30,10 +25,8 @@ export default function DeliveryAddressForm({ value, onChange }: Props) {
           onChangeText={text => updateField('fullName', text)}
         />
       </View>
-
       <View style={styles.formGroup}>
         <Text style={styles.label}>Phone Number</Text>
-
         <TextInput
           style={styles.input}
           placeholder="10-digit mobile number"
@@ -44,10 +37,8 @@ export default function DeliveryAddressForm({ value, onChange }: Props) {
           maxLength={10}
         />
       </View>
-
       <View style={styles.formGroup}>
         <Text style={styles.label}>Address</Text>
-
         <TextInput
           style={[styles.input, styles.textArea]}
           placeholder="House number, street, landmark..."
@@ -59,11 +50,9 @@ export default function DeliveryAddressForm({ value, onChange }: Props) {
           textAlignVertical="top"
         />
       </View>
-
       <View style={styles.row}>
         <View style={styles.halfGroup}>
           <Text style={styles.label}>City</Text>
-
           <TextInput
             style={styles.input}
             placeholder="City"
@@ -72,12 +61,9 @@ export default function DeliveryAddressForm({ value, onChange }: Props) {
             onChangeText={text => updateField('city', text)}
           />
         </View>
-
         <View style={styles.spacer} />
-
         <View style={styles.halfGroup}>
           <Text style={styles.label}>Pincode</Text>
-
           <TextInput
             style={styles.input}
             placeholder="6-digit pincode"
@@ -94,7 +80,6 @@ export default function DeliveryAddressForm({ value, onChange }: Props) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
@@ -105,25 +90,21 @@ const styles = StyleSheet.create({
     elevation: 2,
     marginBottom: 16,
   },
-
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#111827',
     marginBottom: 16,
   },
-
   formGroup: {
     marginBottom: 16,
   },
-
   label: {
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
     marginBottom: 6,
   },
-
   input: {
     borderWidth: 1,
     borderColor: '#e5e7eb',
@@ -134,20 +115,16 @@ const styles = StyleSheet.create({
     color: '#111827',
     backgroundColor: '#ffffff',
   },
-
   textArea: {
     minHeight: 100,
     paddingTop: 12,
   },
-
   row: {
     flexDirection: 'row',
   },
-
   halfGroup: {
     flex: 1,
   },
-
   spacer: {
     width: 16,
   },

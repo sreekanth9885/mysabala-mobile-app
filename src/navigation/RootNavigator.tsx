@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
-
 import { ActivityIndicator, View } from 'react-native';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import WelcomeScreen from '../screens/WelcomeScreen';
-
 import { BottomTabs } from './BottomTabs';
 import CheckoutPage from '../screens/checkout/CheckoutPage';
 import LoginScreen from '../screens/LoginScreen';
@@ -23,24 +18,17 @@ export type RootStackParamList = {
   Checkout: undefined;
   Orders: undefined;
 };
-
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 const ONBOARDING_COMPLETED = '@mysabala_onboarding_completed';
-
 export function RootNavigator() {
   const [isLoading, setIsLoading] = useState(true);
-
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
-
   useEffect(() => {
     checkOnboarding();
   }, []);
-
   const checkOnboarding = async () => {
     try {
       const value = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
-
       setHasCompletedOnboarding(value === 'true');
     } catch (error) {
       console.error('Unable to check onboarding status:', error);
@@ -48,7 +36,6 @@ export function RootNavigator() {
       setIsLoading(false);
     }
   };
-
   if (isLoading) {
     return (
       <View
@@ -63,7 +50,6 @@ export function RootNavigator() {
       </View>
     );
   }
-
   return (
     <Stack.Navigator
       screenOptions={{

@@ -1,12 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
 export const checkoutApi = createApi({
   reducerPath: 'checkoutApi',
-
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://api.mysabala.com',
   }),
-
   endpoints: builder => ({
     createOrder: builder.mutation<
       {
@@ -24,7 +21,6 @@ export const checkoutApi = createApi({
         body,
       }),
     }),
-
     verifyPayment: builder.mutation<
       any,
       {
@@ -52,5 +48,4 @@ export const checkoutApi = createApi({
     }),
   }),
 });
-
 export const { useCreateOrderMutation, useVerifyPaymentMutation } = checkoutApi;

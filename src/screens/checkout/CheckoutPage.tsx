@@ -18,11 +18,9 @@ import DeliveryAddressForm from './components/DeliveryAddressForm';
 import OrderSummary from './components/OrderSummary';
 import CheckoutBottomBar from './components/CheckoutBottomBar';
 import { RootStackParamList } from '../../navigation/RootNavigator';
-
 export default function CheckoutPage() {
   const navigation =
     useNavigation<BottomTabNavigationProp<RootStackParamList>>();
-
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const user = useSelector((state: RootState) => state.auth.user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
@@ -30,10 +28,6 @@ export default function CheckoutPage() {
     cartItems,
     user,
   );
-
-  /*
-   * Empty cart
-   */
   if (cartItems.length === 0) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -41,35 +35,18 @@ export default function CheckoutPage() {
       </SafeAreaView>
     );
   }
-
-  /*
-   * Payment
-   */
   const onPayment = async () => {
-    /*
-     * IMPORTANT:
-     * Do not start Razorpay if user
-     * is not authenticated.
-     */
     if (!isLoggedIn) {
       navigation.navigate('Login', {
         redirect: 'Checkout',
       });
-
       return;
     }
-
-    /*
-     * User is logged in.
-     * Now start payment.
-     */
     const success = await handlePayment();
-
     if (success) {
       navigation.navigate('Main');
     }
   };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -77,17 +54,14 @@ export default function CheckoutPage() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <CheckoutHeader />
-
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <DeliveryAddressForm value={address} onChange={setAddress} />
-
           <OrderSummary items={cartItems} totals={totals} />
         </ScrollView>
-
         <CheckoutBottomBar
           total={totals.grandTotal}
           loading={isLoading}
@@ -97,21 +71,17 @@ export default function CheckoutPage() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#f9fafb',
   },
-
   container: {
     flex: 1,
   },
-
   scrollView: {
     flex: 1,
   },
-
   scrollContent: {
     padding: 16,
     paddingBottom: 120,

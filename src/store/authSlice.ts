@@ -1,29 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
 export type User = {
   id: number;
   name: string;
   email: string;
   phone?: string;
 };
-
 type AuthState = {
   token: string | null;
   user: User | null;
   isLoggedIn: boolean;
 };
-
 const initialState: AuthState = {
   token: null,
   user: null,
   isLoggedIn: false,
 };
-
 const authSlice = createSlice({
   name: 'auth',
-
   initialState,
-
   reducers: {
     setCredentials: (
       state,
@@ -36,7 +30,6 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.isLoggedIn = true;
     },
-
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = {
@@ -45,7 +38,6 @@ const authSlice = createSlice({
         };
       }
     },
-
     logoutUser: state => {
       state.token = null;
       state.user = null;
@@ -53,7 +45,5 @@ const authSlice = createSlice({
     },
   },
 });
-
 export const { setCredentials, updateUser, logoutUser } = authSlice.actions;
-
 export default authSlice.reducer;

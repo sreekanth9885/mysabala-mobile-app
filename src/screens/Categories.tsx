@@ -1,5 +1,4 @@
 import React from 'react';
-
 import {
   ActivityIndicator,
   FlatList,
@@ -7,12 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
 import { useGetCategoriesQuery } from '../store/api';
-
 const Categories = () => {
   const { data: categories, isLoading, isError } = useGetCategoriesQuery();
-
   if (isLoading) {
     return (
       <View
@@ -26,7 +22,6 @@ const Categories = () => {
       </View>
     );
   }
-
   if (isError) {
     return (
       <View
@@ -40,7 +35,6 @@ const Categories = () => {
       </View>
     );
   }
-
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -66,7 +60,6 @@ const Categories = () => {
             >
               {item.name}
             </Text>
-
             <Text
               style={{
                 marginTop: 5,
@@ -81,5 +74,4 @@ const Categories = () => {
     </View>
   );
 };
-
 export default Categories;
