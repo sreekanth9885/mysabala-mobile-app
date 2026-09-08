@@ -7,18 +7,20 @@ import { BottomTabs } from './BottomTabs';
 import CheckoutPage from '../screens/checkout/CheckoutPage';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
-import OrdersScreen from '../screens/orders/OrdersScreen';
 export type RootStackParamList = {
   Welcome: undefined;
+
   Login: {
     redirect?: 'Checkout' | 'Cart' | 'Register';
   };
+
   Register: undefined;
+
   Main: {
     screen?: 'Home' | 'Categories' | 'Cart' | 'Profile';
   };
+
   Checkout: undefined;
-  Orders: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const ONBOARDING_COMPLETED = '@mysabala_onboarding_completed';
@@ -61,7 +63,6 @@ export function RootNavigator() {
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Orders" component={OrdersScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Main" component={BottomTabs} />
       <Stack.Screen name="Checkout" component={CheckoutPage} />

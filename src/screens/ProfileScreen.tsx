@@ -22,10 +22,13 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { logoutUser } from '../store/authSlice';
+import { ProfileStackParamList } from '../navigation/ProfileStack';
 const ORANGE = '#F7890B';
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<ProfileStackParamList>;
+type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export function ProfileScreen() {
   const navigation = useNavigation<NavigationProp>();
+  const rootNavigation = useNavigation<RootNavigationProp>();
   const { isLoggedIn, user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const handleLogout = () => {
@@ -44,12 +47,12 @@ export function ProfileScreen() {
     ]);
   };
   const handleLogin = () => {
-    navigation.navigate('Login', {
+    rootNavigation.navigate('Login', {
       redirect: 'Cart',
     });
   };
   const handleSignUp = () => {
-    navigation.navigate('Register');
+    rootNavigation.navigate('Register');
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -152,7 +155,6 @@ export function ProfileScreen() {
                 subtitle="View your orders"
                 onPress={() => {
                   navigation.navigate('Orders');
-                  console.log('Going to Orders');
                 }}
               />
               <ProfileMenuItem

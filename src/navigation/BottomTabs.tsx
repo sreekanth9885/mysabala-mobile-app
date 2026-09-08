@@ -3,10 +3,10 @@ import { Home, Grid2X2, ShoppingCart, User } from 'lucide-react-native';
 import { useSelector } from 'react-redux';
 import HomeScreen from '../screens/HomeScreen';
 import Categories from '../screens/Categories';
-import { ProfileScreen } from '../screens/ProfileScreen';
 import CartScreen from '../screens/cart/CartScreen';
 import type { RootState } from '../store/store';
 import { TouchableOpacity } from 'react-native';
+import { ProfileStack } from './ProfileStack';
 export type BottomTabParamList = {
   Home: undefined;
   Categories: undefined;
@@ -59,7 +59,7 @@ export function BottomTabs() {
           },
         }}
       />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
   );
 }
