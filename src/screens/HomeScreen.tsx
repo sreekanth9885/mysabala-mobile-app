@@ -45,7 +45,7 @@ const HomeScreen = () => {
           <Text style={styles.title}>Products</Text>
           <Text style={styles.subtitle}>Fresh products for you</Text>
         </View>
-        <Pressable
+        {/* <Pressable
           onPress={() => navigation.navigate('Cart')}
           style={({ pressed }) => [
             styles.cartButton,
@@ -58,7 +58,7 @@ const HomeScreen = () => {
               <Text style={styles.cartBadgeText}>{cartCount}</Text>
             </View>
           )}
-        </Pressable>
+        </Pressable> */}
       </View>
       <FlatList
         data={products}
@@ -101,7 +101,7 @@ const HomeScreen = () => {
                 <Pressable
                   onPress={() => {
                     dispatch(addToCart(item));
-                    navigation.navigate('Cart');
+                    // navigation.navigate('Cart');
                   }}
                   style={({ pressed }) => [
                     styles.addButton,

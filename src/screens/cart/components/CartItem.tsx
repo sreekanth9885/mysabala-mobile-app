@@ -88,7 +88,9 @@ export default function CartItem({
                   styles.quantityButtonText,
                   quantity <= 1 && styles.quantityButtonTextDisabled,
                 ]}
-              ></Text>
+              >
+                -
+              </Text>
             </TouchableOpacity>
             <Text style={styles.quantity}> {quantity} </Text>
             <TouchableOpacity
