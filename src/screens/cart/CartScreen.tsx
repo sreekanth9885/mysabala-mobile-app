@@ -48,7 +48,15 @@ export default function CartScreen() {
     ]);
   };
   if (cartItems.length === 0) {
-    return <EmptyCart onBrowse={() => navigation.navigate('Main')} />;
+    return (
+      <EmptyCart
+        onBrowse={() =>
+          navigation.navigate('Main', {
+            screen: 'Home',
+          })
+        }
+      />
+    );
   }
   return (
     <View style={styles.container}>

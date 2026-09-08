@@ -14,7 +14,9 @@ export type RootStackParamList = {
     redirect?: 'Checkout' | 'Cart' | 'Register';
   };
   Register: undefined;
-  Main: undefined;
+  Main: {
+    screen?: 'Home' | 'Categories' | 'Cart' | 'Profile';
+  };
   Checkout: undefined;
   Orders: undefined;
 };

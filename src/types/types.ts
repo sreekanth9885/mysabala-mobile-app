@@ -10,6 +10,7 @@ export interface Product {
   image: string | null;
   created_at: string;
   updated_at: string;
+  available_quantity: number;
 }
 export interface Category {
   id: number;

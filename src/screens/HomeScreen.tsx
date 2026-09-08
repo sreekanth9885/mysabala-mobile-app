@@ -18,6 +18,7 @@ import type { BottomTabParamList } from '../navigation/BottomTabs';
 const IMAGE_BASE_URL = 'https://api.mysabala.com';
 const HomeScreen = () => {
   const { data: products, isLoading, isError } = useGetProductsQuery();
+  console.log('Products', products);
   const dispatch = useDispatch();
   const navigation =
     useNavigation<BottomTabNavigationProp<BottomTabParamList>>();
@@ -96,47 +97,19 @@ const HomeScreen = () => {
                 <Text style={styles.price}>
                   ₹{Number(item.price).toFixed(2)}
                 </Text>
-                {cartItem ? (
-                  <View style={styles.quantityContainer}>
-                    {/* Minus */}
-                    <Pressable
-                      onPress={() => dispatch(removeFromCart(item.id))}
-                      style={({ pressed }) => [
-                        styles.quantityButton,
-                        pressed && styles.quantityButtonPressed,
-                      ]}
-                    >
-                      <Text style={styles.quantityButtonText}>−</Text>
-                    </Pressable>
-                    <View style={styles.quantityValue}>
-                      <Text style={styles.quantityText}>
-                        {cartItem.quantity}
-                      </Text>
-                    </View>
-                    <Pressable
-                      onPress={() => dispatch(addToCart(item))}
-                      style={({ pressed }) => [
-                        styles.quantityButton,
-                        pressed && styles.quantityButtonPressed,
-                      ]}
-                    >
-                      <Text style={styles.quantityButtonText}>+</Text>
-                    </Pressable>
-                  </View>
-                ) : (
-                  <Pressable
-                    onPress={() => {
-                      dispatch(addToCart(item));
-                      navigation.navigate('Cart');
-                    }}
-                    style={({ pressed }) => [
-                      styles.addButton,
-                      pressed && styles.addButtonPressed,
-                    ]}
-                  >
-                    <Text style={styles.addButtonText}>Add to Cart</Text>
-                  </Pressable>
-                )}
+
+                <Pressable
+                  onPress={() => {
+                    dispatch(addToCart(item));
+                    navigation.navigate('Cart');
+                  }}
+                  style={({ pressed }) => [
+                    styles.addButton,
+                    pressed && styles.addButtonPressed,
+                  ]}
+                >
+                  <Text style={styles.addButtonText}>Add to Cart</Text>
+                </Pressable>
               </View>
             </View>
           );
