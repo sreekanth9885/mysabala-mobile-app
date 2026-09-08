@@ -37,17 +37,25 @@ export const useCheckout = (
   const handlePayment = async () => {
     if (cartItems.length === 0) {
       Alert.alert('Error', 'Your cart is empty');
-      return;
+      return false;
     }
+
     const validationError = validateCheckoutAddress(address);
+
     if (validationError) {
       Alert.alert('Invalid Details', validationError);
-      return;
+      return false;
     }
+
     try {
+      // 1. Create Razorpay order
       const razorpayOrder = await createOrder({
-        grand_total: totals.grandTotal,
+        cart_items: cartItems,
       }).unwrap();
+
+      console.log('RAZORPAY ORDER:', razorpayOrder);
+
+      // 2. Open Razorpay
       const options = {
         key: razorpayOrder.key,
         amount: Math.round(razorpayOrder.amount * 100),
@@ -63,7 +71,12 @@ export const useCheckout = (
           color: '#F7890B',
         },
       };
+
       const payment = await RazorpayCheckout.open(options);
+
+      console.log('RAZORPAY PAYMENT:', payment);
+
+      // 3. Verify payment
       await verifyPayment({
         user_id: user?.id,
         customer_name: address.fullName,
@@ -80,16 +93,24 @@ export const useCheckout = (
         razorpay_order_id: payment.razorpay_order_id,
         razorpay_signature: payment.razorpay_signature,
       }).unwrap();
+
+      // 4. Clear cart only after successful verification
       dispatch(clearCart());
+
       Alert.alert('Success', 'Order placed successfully 🎉');
+
       return true;
     } catch (error: any) {
       console.log('CHECKOUT ERROR:', error);
+
       const message =
         error?.data?.message ||
+        error?.data?.error ||
         error?.message ||
         'Payment failed. Please try again.';
+
       Alert.alert('Payment Failed', message);
+
       return false;
     }
   };

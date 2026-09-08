@@ -9,7 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootState } from '../../store/store';
 import { useCheckout } from './hooks/useCheckout';
 import EmptyCart from './components/EmptyCart';
@@ -20,7 +20,7 @@ import CheckoutBottomBar from './components/CheckoutBottomBar';
 import { RootStackParamList } from '../../navigation/RootNavigator';
 export default function CheckoutPage() {
   const navigation =
-    useNavigation<BottomTabNavigationProp<RootStackParamList>>();
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const user = useSelector((state: RootState) => state.auth.user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);

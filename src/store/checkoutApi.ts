@@ -1,18 +1,43 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+interface CreateOrderResponse {
+  success: boolean;
+  data: {
+    razorpay_order_id: string;
+    amount: number;
+    key: string;
+  };
+}
+
+interface CreateOrderResult {
+  razorpay_order_id: string;
+  amount: number;
+  key: string;
+}
+
+interface VerifyPaymentResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    order_id?: number;
+  };
+}
+
 export const checkoutApi = createApi({
   reducerPath: 'checkoutApi',
+
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://api.mysabala.com',
   }),
+
   endpoints: builder => ({
+    // ---------------------------------
+    // CREATE RAZORPAY ORDER
+    // ---------------------------------
     createOrder: builder.mutation<
+      CreateOrderResult,
       {
-        key: string;
-        amount: number;
-        razorpay_order_id: string;
-      },
-      {
-        grand_total: number;
+        cart_items: any[];
       }
     >({
       query: body => ({
@@ -20,9 +45,17 @@ export const checkoutApi = createApi({
         method: 'POST',
         body,
       }),
+
+      transformResponse: (response: CreateOrderResponse) => {
+        return response.data;
+      },
     }),
+
+    // ---------------------------------
+    // VERIFY PAYMENT
+    // ---------------------------------
     verifyPayment: builder.mutation<
-      any,
+      VerifyPaymentResponse,
       {
         user_id: number | undefined;
         customer_name: string;
@@ -48,4 +81,5 @@ export const checkoutApi = createApi({
     }),
   }),
 });
+
 export const { useCreateOrderMutation, useVerifyPaymentMutation } = checkoutApi;

@@ -6,10 +6,14 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
 import { useGetOrdersByUserQuery } from '../../store/ordersApi';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { ProfileStackParamList } from '../../navigation/ProfileStack';
 const ORANGE = '#F7890B';
 export default function OrdersScreen() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -21,7 +25,12 @@ export default function OrdersScreen() {
     refetch,
   } = useGetOrdersByUserQuery(user?.id ?? 0, {
     skip: !user?.id,
+    pollingInterval: 10000,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
   });
+  const navigation =
+    useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
   if (!user?.id) {
     return (
       <View style={styles.center}>
@@ -77,7 +86,16 @@ export default function OrdersScreen() {
           </View>
         ) : (
           orders.map((order: any) => (
-            <View key={order.id} style={styles.orderCard}>
+            <TouchableOpacity
+              key={order.id}
+              style={styles.orderCard}
+              activeOpacity={0.85}
+              onPress={() => {
+                navigation.navigate('OrderTracking', {
+                  order,
+                });
+              }}
+            >
               <View style={styles.orderHeader}>
                 <View>
                   <Text style={styles.orderNumber}>Order #{order.id}</Text>
@@ -132,7 +150,7 @@ export default function OrdersScreen() {
                   </Text>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
           ))
         )}
       </ScrollView>

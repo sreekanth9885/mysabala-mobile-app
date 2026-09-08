@@ -16,9 +16,11 @@ export type RootStackParamList = {
 
   Register: undefined;
 
-  Main: {
-    screen?: 'Home' | 'Categories' | 'Cart' | 'Profile';
-  };
+  Main:
+    | undefined
+    | {
+        screen?: 'Home' | 'Categories' | 'Cart' | 'Profile';
+      };
 
   Checkout: undefined;
 };
