@@ -6,8 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import BootSplash from 'react-native-bootsplash';
 
-import { store } from './src/store/store';
+import { persistor, store } from './src/store/store';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { PersistGate } from 'redux-persist/integration/react';
 
 const App = () => {
   useEffect(() => {
@@ -23,7 +24,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <RootNavigator />
+        <PersistGate loading={null} persistor={persistor}>
+          <RootNavigator />
+        </PersistGate>
       </NavigationContainer>
     </Provider>
   );

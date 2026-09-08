@@ -113,7 +113,10 @@ export function ProfileScreen() {
                 icon={<Package size={21} color="#374151" />}
                 title="My Orders"
                 subtitle="Track your orders"
-                onPress={() => navigation.navigate('Orders')}
+                onPress={() => {
+                  navigation.navigate('Orders');
+                  console.log('Going to Orders');
+                }}
               />
 
               <ProfileMenuItem
@@ -177,6 +180,10 @@ export function ProfileScreen() {
                 icon={<Package size={21} color="#374151" />}
                 title="My Orders"
                 subtitle="View your orders"
+                onPress={() => {
+                  navigation.navigate('Orders');
+                  console.log('Going to Orders');
+                }}
               />
 
               <ProfileMenuItem
