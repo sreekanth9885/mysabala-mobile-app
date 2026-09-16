@@ -16,6 +16,9 @@ interface User {
   id?: number;
   name?: string;
   phone?: string;
+  address?: string;
+  city?: string;
+  pincode?: string;
 }
 export const useCheckout = (
   cartItems: CheckoutCartItem[],
@@ -28,9 +31,9 @@ export const useCheckout = (
   const [address, setAddress] = useState<CheckoutAddress>({
     fullName: user?.name || '',
     phone: user?.phone || '',
-    address: '',
-    city: '',
-    pincode: '',
+    address: user?.address || '',
+    city: user?.city || '',
+    pincode: user?.pincode || '',
   });
   const totals = calculateCheckoutTotals(cartItems);
   const isLoading = isCreating || isVerifying;

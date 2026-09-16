@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/store';
@@ -122,18 +123,46 @@ export default function OrdersScreen() {
               <View style={styles.itemsContainer}>
                 {order.items?.map((item: any) => (
                   <View key={item.id} style={styles.itemRow}>
-                    <View style={styles.itemInfo}>
-                      <Text style={styles.itemName} numberOfLines={1}>
-                        {item.food_name}
-                      </Text>
-                      <Text style={styles.itemQty}>Qty: {item.quantity}</Text>
+                    {/* Product Image */}
+                    <View style={styles.productImageContainer}>
+                      {item.product_image ? (
+                        <Image
+                          source={{
+                            uri: item.product_image.startsWith('http')
+                              ? item.product_image
+                              : `https://api.mysabala.com${item.product_image}`,
+                          }}
+                          style={styles.productImage}
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <View style={styles.productImagePlaceholder}>
+                          <Text style={styles.placeholderIcon}>📦</Text>
+                        </View>
+                      )}
                     </View>
+
+                    {/* Product Details */}
+                    <View style={styles.itemInfo}>
+                      <Text style={styles.itemName} numberOfLines={2}>
+                        {item.product_name}
+                      </Text>
+
+                      <Text style={styles.itemQty}>Qty: {item.quantity}</Text>
+
+                      <Text style={styles.itemUnitPrice}>
+                        ₹{Number(item.price).toFixed(2)} each
+                      </Text>
+                    </View>
+
+                    {/* Item Total */}
                     <Text style={styles.itemPrice}>
                       ₹{Number(item.total).toFixed(2)}
                     </Text>
                   </View>
                 ))}
               </View>
+
               <View style={styles.addressContainer}>
                 <Text style={styles.address}>
                   📍 {order.address}, {order.city} - {order.pincode}
@@ -420,5 +449,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     textAlign: 'center',
+  },
+  productImageContainer: {
+    width: 58,
+    height: 58,
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#F3F4F6',
+    marginRight: 12,
+  },
+
+  productImage: {
+    width: '100%',
+    height: '100%',
+  },
+
+  productImagePlaceholder: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F3F4F6',
+  },
+
+  placeholderIcon: {
+    fontSize: 24,
+  },
+
+  itemUnitPrice: {
+    marginTop: 3,
+    fontSize: 11,
+    color: '#9CA3AF',
   },
 });
