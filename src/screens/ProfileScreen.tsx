@@ -12,8 +12,11 @@ import {
   ChevronRight,
   Heart,
   HelpCircle,
+  Mail,
   MapPin,
   Package,
+  Pencil,
+  Phone,
   User,
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,20 +26,21 @@ import { RootStackParamList } from '../navigation/RootNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { logoutUser } from '../store/authSlice';
 import { ProfileStackParamList } from '../navigation/ProfileStack';
+
 const ORANGE = '#F7890B';
+
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList>;
 type RootNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 export function ProfileScreen() {
   const navigation = useNavigation<NavigationProp>();
   const rootNavigation = useNavigation<RootNavigationProp>();
   const { isLoggedIn, user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
+
   const handleLogout = () => {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
-      {
-        text: 'Cancel',
-        style: 'cancel',
-      },
+      { text: 'Cancel', style: 'cancel' },
       {
         text: 'Logout',
         style: 'destructive',
@@ -46,14 +50,15 @@ export function ProfileScreen() {
       },
     ]);
   };
+
   const handleLogin = () => {
-    rootNavigation.navigate('Login', {
-      redirect: 'Cart',
-    });
+    rootNavigation.navigate('Login', { redirect: 'Cart' });
   };
+
   const handleSignUp = () => {
     rootNavigation.navigate('Register');
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -63,6 +68,7 @@ export function ProfileScreen() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>My Profile</Text>
         </View>
+
         {!isLoggedIn ? (
           <>
             <View style={styles.profileCard}>
@@ -76,6 +82,7 @@ export function ProfileScreen() {
                 </Text>
               </View>
             </View>
+
             <Pressable
               onPress={handleLogin}
               style={({ pressed }) => [
@@ -85,6 +92,7 @@ export function ProfileScreen() {
             >
               <Text style={styles.loginButtonText}>Login</Text>
             </Pressable>
+
             <Pressable
               onPress={handleSignUp}
               style={({ pressed }) => [
@@ -94,6 +102,7 @@ export function ProfileScreen() {
             >
               <Text style={styles.signupButtonText}>Create New Account</Text>
             </Pressable>
+
             <Text style={styles.sectionTitle}>Explore MySabala</Text>
             <View style={styles.menuCard}>
               <ProfileMenuItem
@@ -116,6 +125,7 @@ export function ProfileScreen() {
                 subtitle="Your saved products"
               />
             </View>
+
             <Text style={styles.sectionTitle}>Support</Text>
             <View style={styles.menuCard}>
               <ProfileMenuItem
@@ -124,6 +134,7 @@ export function ProfileScreen() {
                 subtitle="We're here to help"
               />
             </View>
+
             <View style={styles.appInfo}>
               <Text style={styles.appName}>MySabala</Text>
               <Text style={styles.version}>Version 1.0.0</Text>
@@ -131,22 +142,55 @@ export function ProfileScreen() {
           </>
         ) : (
           <View>
-            <View style={styles.profileCard}>
-              <View style={styles.loggedAvatar}>
-                <Text style={styles.avatarText}>
-                  {(user?.name || 'U').charAt(0).toUpperCase()}
-                </Text>
+            {/* ---------- PROFESSIONAL LOGGED-IN CARD ---------- */}
+            <View style={styles.userCard}>
+              <View style={styles.userCardTop}>
+                <View style={styles.avatarWrapper}>
+                  <View style={styles.loggedAvatar}>
+                    <Text style={styles.avatarText}>
+                      {(user?.name || 'U').charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.profileInfo}>
+                  <Text style={styles.userName} numberOfLines={1}>
+                    {user?.name || 'MySabala User'}
+                  </Text>
+
+                  {!!user?.phone && (
+                    <View style={styles.contactRow}>
+                      <Phone size={13} color="#9CA3AF" />
+                      <Text style={styles.contactText} numberOfLines={1}>
+                        {user.phone}
+                      </Text>
+                    </View>
+                  )}
+
+                  {!!user?.email && (
+                    <View style={styles.contactRow}>
+                      <Mail size={13} color="#9CA3AF" />
+                      <Text style={styles.contactText} numberOfLines={1}>
+                        {user.email}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                <Pressable
+                  onPress={() => rootNavigation.navigate('EditProfile')}
+                  style={({ pressed }) => [
+                    styles.editIconButton,
+                    pressed && styles.buttonPressed,
+                  ]}
+                  hitSlop={12}
+                >
+                  <Pencil size={18} color={ORANGE} />
+                </Pressable>
               </View>
-              <View style={styles.profileInfo}>
-                <Text style={styles.userName}>
-                  {user?.name || 'MySabala User'}
-                </Text>
-                <Text style={styles.phoneNumber}>
-                  {user?.phone || user?.email || ''}
-                </Text>
-              </View>
-              <ChevronRight size={22} color="#9CA3AF" />
             </View>
+            {/* ---------- END CARD ---------- */}
+
             <Text style={styles.sectionTitle}>My Account</Text>
             <View style={styles.menuCard}>
               <ProfileMenuItem
@@ -168,6 +212,7 @@ export function ProfileScreen() {
                 subtitle="Your saved products"
               />
             </View>
+
             <Pressable
               onPress={handleLogout}
               style={({ pressed }) => [
@@ -183,12 +228,14 @@ export function ProfileScreen() {
     </SafeAreaView>
   );
 }
+
 interface ProfileMenuItemProps {
   icon: React.ReactNode;
   title: string;
   subtitle: string;
   onPress?: () => void;
 }
+
 function ProfileMenuItem({
   icon,
   title,
@@ -209,6 +256,7 @@ function ProfileMenuItem({
     </Pressable>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -260,7 +308,6 @@ const styles = StyleSheet.create({
     backgroundColor: ORANGE,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
   },
   avatarText: {
     fontSize: 25,
@@ -396,5 +443,41 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
+  },
+  // ---------- NEW STYLES FOR PROFESSIONAL CARD ----------
+  userCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+    overflow: 'hidden',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+  },
+  userCardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 18,
+  },
+  avatarWrapper: {
+    marginRight: 14,
+  },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  contactText: {
+    marginLeft: 6,
+    fontSize: 12,
+    color: '#6B7280',
+    flex: 1,
+  },
+  editIconButton: {
+    padding: 6,
+    marginLeft: 8,
   },
 });

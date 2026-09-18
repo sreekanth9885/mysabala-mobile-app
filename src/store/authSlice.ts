@@ -4,6 +4,11 @@ export type User = {
   name: string;
   email: string;
   phone?: string;
+  address?: string;
+  city?: string;
+  pincode?: string;
+  address_id?: number;
+  is_default?: number;
 };
 type AuthState = {
   token: string | null;

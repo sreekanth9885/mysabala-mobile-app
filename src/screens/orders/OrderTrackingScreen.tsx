@@ -14,11 +14,13 @@ import {
   Bike,
   CheckCircle2,
   XCircle,
-  MapPin,
   ArrowLeft,
+  Phone,
+  Headphones,
 } from 'lucide-react-native';
 
 const ORANGE = '#F7890B';
+const CANCEL_PHONE = '9052029029';
 
 interface OrderItem {
   id: number;
@@ -51,37 +53,18 @@ interface Props {
 }
 
 const STAGES = [
-  {
-    key: 'placed',
-    label: 'Order Placed',
-    icon: ShoppingBag,
-  },
-  {
-    key: 'confirmed',
-    label: 'Confirmed',
-    icon: PackageCheck,
-  },
-  {
-    key: 'preparing',
-    label: 'Preparing',
-    icon: ChefHat,
-  },
-  {
-    key: 'out_for_delivery',
-    label: 'Out for Delivery',
-    icon: Bike,
-  },
-  {
-    key: 'delivered',
-    label: 'Delivered',
-    icon: CheckCircle2,
-  },
+  { key: 'placed', label: 'Order Placed', icon: ShoppingBag },
+  { key: 'confirmed', label: 'Confirmed', icon: PackageCheck },
+  { key: 'preparing', label: 'Preparing', icon: ChefHat },
+  { key: 'out_for_delivery', label: 'Out for Delivery', icon: Bike },
+  { key: 'delivered', label: 'Delivered', icon: CheckCircle2 },
 ];
 
 export default function OrderTrackingScreen({ route, navigation }: Props) {
   const { order } = route.params;
 
   const isCancelled = order.order_status === 'cancelled';
+  const isDelivered = order.order_status === 'delivered';
 
   const currentIndex = STAGES.findIndex(
     stage => stage.key === order.order_status,
@@ -102,17 +85,16 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
     }).format(new Date(dateString));
   };
 
-  const mapUrl =
-    `https://www.google.com/maps/search/?api=1&query=` +
-    encodeURIComponent(`${order.address}, ${order.city}, ${order.pincode}`);
-
-  const openGoogleMaps = async () => {
+  const callToCancel = async () => {
     try {
-      await Linking.openURL(mapUrl);
+      await Linking.openURL(`tel:${CANCEL_PHONE}`);
     } catch (error) {
-      console.log('Unable to open Google Maps:', error);
+      console.log('Unable to open dialer:', error);
     }
   };
+
+  // Hide the cancel card once the order is delivered or already cancelled
+  const showCancelCard = !isCancelled && !isDelivered;
 
   return (
     <View style={styles.container}>
@@ -127,7 +109,6 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
 
         <View style={styles.headerText}>
           <Text style={styles.title}>Track Order</Text>
-
           <Text style={styles.subtitle}>
             Order #{order.id} • {formatDate(order.created_at)}
           </Text>
@@ -157,32 +138,25 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
             <Text style={styles.sectionTitle}>Order Status</Text>
 
             <View style={styles.tracker}>
-              {/* BACKGROUND LINE */}
               <View style={styles.progressBackground} />
 
-              {/* ORANGE PROGRESS */}
               {currentIndex >= 0 && (
                 <View
                   style={[
                     styles.progressActive,
-                    {
-                      width: `${progressPercent}%`,
-                    },
+                    { width: `${progressPercent}%` },
                   ]}
                 />
               )}
 
-              {/* STAGES */}
               <View style={styles.stagesContainer}>
                 {STAGES.map((stage, index) => {
                   const isCompleted = index <= currentIndex;
                   const isCurrent = index === currentIndex;
-
                   const Icon = stage.icon;
 
                   return (
                     <View key={stage.key} style={styles.stage}>
-                      {/* ICON */}
                       <View
                         style={[
                           styles.iconCircle,
@@ -198,7 +172,6 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
                         />
                       </View>
 
-                      {/* LABEL */}
                       <Text
                         style={[
                           styles.stageLabel,
@@ -211,13 +184,40 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
                         {stage.label}
                       </Text>
 
-                      {/* CURRENT DOT */}
                       {isCurrent && <View style={styles.currentDot} />}
                     </View>
                   );
                 })}
               </View>
             </View>
+          </View>
+        )}
+
+        {/* CANCEL / SUPPORT CARD */}
+        {showCancelCard && (
+          <View style={styles.cancelCard}>
+            <View style={styles.cancelHeader}>
+              <View style={styles.cancelIconWrap}>
+                <Headphones size={20} color={ORANGE} />
+              </View>
+
+              <View style={styles.cancelTextWrap}>
+                <Text style={styles.cancelTitle}>Need to cancel?</Text>
+                <Text style={styles.cancelSubtitle}>
+                  Call our support team to cancel this order before it's out for
+                  delivery.
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.callButton}
+              onPress={callToCancel}
+              activeOpacity={0.85}
+            >
+              <Phone size={18} color="#FFFFFF" />
+              <Text style={styles.callButtonText}>Call {CANCEL_PHONE}</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -231,7 +231,6 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
                 <Text style={styles.itemName} numberOfLines={1}>
                   {item.food_name}
                 </Text>
-
                 <Text style={styles.itemQuantity}>× {item.quantity}</Text>
               </View>
 
@@ -241,51 +240,18 @@ export default function OrderTrackingScreen({ route, navigation }: Props) {
             </View>
           ))}
 
-          {/* TOTAL */}
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Total</Text>
-
             <Text style={styles.total}>
               ₹{Number(order.grand_total).toFixed(2)}
             </Text>
           </View>
         </View>
 
-        {/* DELIVERY ADDRESS */}
-        <View style={styles.addressCard}>
-          <View style={styles.addressHeader}>
-            <View style={styles.mapIcon}>
-              <MapPin size={20} color={ORANGE} />
-            </View>
-
-            <View style={styles.addressTextContainer}>
-              <Text style={styles.addressTitle}>Delivery Address</Text>
-
-              <Text style={styles.addressText}>
-                {order.address}, {order.city} - {order.pincode}
-              </Text>
-            </View>
-          </View>
-
-          {/* OPEN GOOGLE MAPS */}
-          <TouchableOpacity
-            style={styles.mapButton}
-            onPress={openGoogleMaps}
-            activeOpacity={0.8}
-          >
-            <MapPin size={18} color="#FFFFFF" />
-
-            <Text style={styles.mapButtonText}>
-              Open Location in Google Maps
-            </Text>
-          </TouchableOpacity>
-        </View>
-
         {/* PAYMENT */}
         {order.payment_method && (
           <View style={styles.paymentCard}>
             <Text style={styles.paymentLabel}>Payment Method</Text>
-
             <Text style={styles.paymentValue}>{order.payment_method}</Text>
           </View>
         )}
@@ -479,6 +445,65 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  /* CANCEL / SUPPORT CARD */
+  cancelCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#FFE7C7',
+  },
+
+  cancelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+
+  cancelIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFF3E5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+
+  cancelTextWrap: {
+    flex: 1,
+  },
+
+  cancelTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#111827',
+  },
+
+  cancelSubtitle: {
+    marginTop: 3,
+    fontSize: 12,
+    lineHeight: 17,
+    color: '#6B7280',
+  },
+
+  callButton: {
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: ORANGE,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+
+  callButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+
   summaryCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 18,
@@ -537,63 +562,6 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '800',
     color: ORANGE,
-  },
-
-  addressCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#EEEEEE',
-  },
-
-  addressHeader: {
-    flexDirection: 'row',
-  },
-
-  mapIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFF3E5',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-
-  addressTextContainer: {
-    flex: 1,
-  },
-
-  addressTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
-  },
-
-  addressText: {
-    marginTop: 4,
-    fontSize: 13,
-    lineHeight: 19,
-    color: '#6B7280',
-  },
-
-  mapButton: {
-    marginTop: 15,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: ORANGE,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-
-  mapButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
   },
 
   paymentCard: {
