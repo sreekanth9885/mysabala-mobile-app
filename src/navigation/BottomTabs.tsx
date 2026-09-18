@@ -8,7 +8,7 @@ import type { RootState } from '../store/store';
 import { TouchableOpacity } from 'react-native';
 import { ProfileStack } from './ProfileStack';
 export type BottomTabParamList = {
-  Home: undefined;
+  Home: { categoryId?: number } | undefined;
   Categories: undefined;
   Cart: undefined;
   Profile: undefined;

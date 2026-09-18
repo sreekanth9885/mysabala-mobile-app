@@ -20,7 +20,7 @@ import {
 } from 'lucide-react-native';
 
 const ORANGE = '#F7890B';
-const CANCEL_PHONE = '9052029029';
+const CANCEL_PHONE = '8019886299';
 
 interface OrderItem {
   id: number;

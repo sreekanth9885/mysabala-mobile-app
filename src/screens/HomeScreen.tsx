@@ -1,302 +1,134 @@
-import React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { useGetProductsQuery } from '../store/api';
-import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, removeFromCart } from '../store/cartSlice';
-import type { RootState } from '../store/store';
-import { useNavigation } from '@react-navigation/native';
+import React, { useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import type { BottomTabParamList } from '../navigation/BottomTabs';
-const IMAGE_BASE_URL = 'https://api.mysabala.com';
+
+import { useGetCategoriesQuery } from '../store/api';
+import { COLORS, SPACING } from '../constants/theme';
+import { useCart } from './home/hooks/useCart';
+import { useProductFilters } from './home/hooks/useProductFilters';
+import LoadingState from './home/components/common/LoadingState';
+import ErrorState from './home/components/common/ErrorState';
+import HomeHeader from './home/components/home/HomeHeader';
+import EmptyState from './home/components/common/EmptyState';
+import ProductGrid from './home/components/home/ProductGrid';
+import CategoryFilter from './home/components/home/CategoryFilter';
+import SubCategoryFilter from './home/components/home/SubCategoryFilter';
+type HomeRoute = RouteProp<BottomTabParamList, 'Home'>;
 const HomeScreen = () => {
-  const { data: products, isLoading, isError } = useGetProductsQuery();
-  console.log('Products', products);
-  const dispatch = useDispatch();
   const navigation =
     useNavigation<BottomTabNavigationProp<BottomTabParamList>>();
-  const cartItems = useSelector((state: RootState) => state.cart.items);
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  if (isLoading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#F7890B" />
-      </View>
-    );
-  }
-  if (isError) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>Unable to load products</Text>
-      </View>
-    );
-  }
+  const route = useRoute<HomeRoute>();
+  const initialCategoryId = route.params?.categoryId ?? null;
+  const { count: cartCount, add, remove, getQuantity } = useCart();
+
+  const {
+    products,
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+    categoryId,
+    subCategoryId,
+    selectCategory,
+    selectSubCategory,
+  } = useProductFilters(initialCategoryId);
+
+  const { data: categories = [] } = useGetCategoriesQuery();
+
+  /** Sub-categories for the currently selected parent category */
+  const subCategories = useMemo(() => {
+    if (categoryId === null) return [];
+    const parent = categories.find(c => c.id === categoryId) as any;
+    return parent?.sub_categories ?? [];
+  }, [categories, categoryId]);
+
+  const sectionTitle = useMemo(() => {
+    if (categoryId === null) return 'All Products';
+    return categories.find(c => c.id === categoryId)?.name ?? 'Products';
+  }, [categories, categoryId]);
+
+  /** What to show when the product list is empty */
+  const listEmpty = isLoading ? (
+    <LoadingState inline />
+  ) : isError ? (
+    <ErrorState onRetry={refetch} />
+  ) : (
+    <EmptyState
+      title="No products here"
+      message="Try a different category or sub-category."
+    />
+  );
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Products</Text>
-          <Text style={styles.subtitle}>Fresh products for you</Text>
-        </View>
-        {/* <Pressable
-          onPress={() => navigation.navigate('Cart')}
-          style={({ pressed }) => [
-            styles.cartButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.cartIcon}>🛒</Text>
-          {cartCount > 0 && (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>{cartCount}</Text>
-            </View>
-          )}
-        </Pressable> */}
-      </View>
-      <FlatList
-        data={products}
-        keyExtractor={item => item.id.toString()}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-        columnWrapperStyle={styles.columnWrapper}
-        renderItem={({ item }) => {
-          const imageUrl = item.image
-            ? `${IMAGE_BASE_URL}${item.image}`
-            : undefined;
-          const cartItem = cartItems.find(cart => cart.id === item.id);
-          return (
-            <View style={styles.card}>
-              <View style={styles.imageContainer}>
-                {imageUrl ? (
-                  <Image
-                    source={{ uri: imageUrl }}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={styles.noImage}>
-                    <Text style={styles.noImageText}>No Image</Text>
-                  </View>
-                )}
-              </View>
-              <View style={styles.details}>
-                <Text style={styles.productName} numberOfLines={2}>
-                  {item.name}
-                </Text>
-                <Text style={styles.category} numberOfLines={1}>
-                  {item.category_name}
-                </Text>
-                <Text style={styles.price}>
-                  ₹{Number(item.price).toFixed(2)}
-                </Text>
+      {/* <HomeHeader
+        cartCount={cartCount}
+        onCartPress={() => navigation.navigate('Cart')}
+      /> */}
 
-                <Pressable
-                  onPress={() => {
-                    dispatch(addToCart(item));
-                    // navigation.navigate('Cart');
-                  }}
-                  style={({ pressed }) => [
-                    styles.addButton,
-                    pressed && styles.addButtonPressed,
-                  ]}
-                >
-                  <Text style={styles.addButtonText}>Add to Cart</Text>
-                </Pressable>
-              </View>
+      <ProductGrid
+        products={products}
+        getQuantity={getQuantity}
+        onAdd={add}
+        refreshing={isFetching && !isLoading}
+        onRefresh={refetch}
+        ListHeader={
+          <View>
+            <CategoryFilter
+              categories={categories}
+              selectedId={categoryId}
+              onSelect={selectCategory}
+            />
+
+            {subCategories.length > 0 && (
+              <SubCategoryFilter
+                subCategories={subCategories}
+                selectedId={subCategoryId}
+                onSelect={selectSubCategory}
+              />
+            )}
+
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>{sectionTitle}</Text>
+              {!isLoading && (
+                <Text style={styles.sectionCount}>
+                  {products.length} {products.length === 1 ? 'item' : 'items'}
+                </Text>
+              )}
             </View>
-          );
-        }}
+          </View>
+        }
+        ListEmpty={listEmpty}
       />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: COLORS.background,
   },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F8F9FA',
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#DC2626',
-  },
-  header: {
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  subtitle: {
-    marginTop: 3,
-    fontSize: 13,
-    color: '#6B7280',
-  },
-  cartButton: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: '#FFF3E0',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cartIcon: {
-    fontSize: 22,
-  },
-  cartBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    minWidth: 20,
-    height: 20,
-    paddingHorizontal: 5,
-    borderRadius: 10,
-    backgroundColor: '#F7890B',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cartBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  list: {
-    padding: 12,
-    paddingBottom: 24,
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-  },
-  card: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    marginBottom: 14,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  imageContainer: {
-    width: '100%',
-    height: 145,
-    backgroundColor: '#F3F4F6',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  noImage: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noImageText: {
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  details: {
-    padding: 10,
-  },
-  productName: {
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '600',
-    color: '#111827',
-    minHeight: 40,
-  },
-  category: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  price: {
-    marginTop: 6,
+  sectionTitle: {
     fontSize: 17,
-    fontWeight: '700',
-    color: '#111827',
+    fontWeight: '800',
+    color: COLORS.text,
   },
-  addButton: {
-    height: 40,
-    marginTop: 10,
-    borderRadius: 8,
-    backgroundColor: '#F7890B',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  addButtonPressed: {
-    opacity: 0.75,
-  },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  quantityContainer: {
-    height: 40,
-    marginTop: 10,
-    borderRadius: 8,
-    backgroundColor: '#FFF7ED',
-    borderWidth: 1,
-    borderColor: '#FED7AA',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    overflow: 'hidden',
-  },
-  quantityButton: {
-    width: 38,
-    height: 38,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFF0DB',
-  },
-  quantityButtonPressed: {
-    backgroundColor: '#FED7AA',
-  },
-  quantityButtonText: {
-    fontSize: 22,
-    lineHeight: 24,
+  sectionCount: {
+    fontSize: 12,
     fontWeight: '600',
-    color: '#C2410C',
-  },
-  quantityValue: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quantityText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  pressed: {
-    opacity: 0.7,
+    color: COLORS.textMuted,
   },
 });
+
 export default HomeScreen;
